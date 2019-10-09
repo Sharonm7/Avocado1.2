@@ -76,7 +76,7 @@ public class AccountPage extends AppCompatActivity
         btnSaveDate= (Button) findViewById(R.id.btnSaveDate);
 
 
-        loadUserInformation(genres);
+        //loadUserInformation(genres);
 
         ButtonEditGenres.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,7 +113,7 @@ public class AccountPage extends AppCompatActivity
 
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user.getDisplayName() != null) {
-            textViewDisplayName.setText("החשבון של " + user.getDisplayName());
+           textViewDisplayName.setText("החשבון של " + user.getDisplayName());
         }
         textViewEmail.setText(mAuth.getCurrentUser().getEmail());
 

@@ -44,6 +44,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "797492330970-q9jkqvr49o0o51jp505khi0bl74f3psv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.avocado1",
+            "certificate_hash": "fa881d653d91da44ecaa6e568fb2828723f6aa22"
+          }
+        },
+        {
           "client_id": "797492330970-hsbljvgm69gn6vq7g919kc7q1rl6aukd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
