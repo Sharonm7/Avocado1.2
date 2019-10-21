@@ -90,11 +90,11 @@ class GetTMDBJsonData extends AsyncTask<String, Void, List<Movie>> implements Ge
                     String release_date = jMovie.getString("release_date");
                     String poster = jMovie.getString("poster_path");
 
-
+                    String posterLink = poster.replace("/", "https://image.tmdb.org/t/p/w92/");
                     // Example of Lion King poster request ==>  https://image.tmdb.org/t/p/original/fILTFOc4uV1mYL0qkoc3LyG1Jo9.jpg
-                    // Discover dsize poster request ==>  https://image.tmdb.org/t/p/w92/fILTFOc4uV1mYL0qkoc3LyG1Jo9.jpg
+                    // Discover size poster request ==>  https://image.tmdb.org/t/p/w92/fILTFOc4uV1mYL0qkoc3LyG1Jo9.jpg
 
-                    Movie movie = new Movie(trailer, vote_avg , title, poster,overview, release_date );
+                    Movie movie = new Movie(trailer, vote_avg , title, posterLink ,overview, release_date );
                     movieList.add(movie);
 
                     Log.d(TAG, "onDownloadComplete: " + movie.toString());
