@@ -36,13 +36,7 @@ public class LoginPage extends BaseActivity {
      Button loginBtn;
      ProgressBar progressBar;
     DatabaseReference myRef;
-
-
     private static final String TAG= LoginPage.class.getName();
-
-
-
-
 
 
      @Override
@@ -57,7 +51,8 @@ public class LoginPage extends BaseActivity {
          progressBar= findViewById(R.id.progressBarId);
          mAuth= FirebaseAuth.getInstance();
 
-
+         editTextEmail.setText("aa@g.com");
+         editTextPassword.setText("123456");
 
          signUp.setOnClickListener(new View.OnClickListener() {
            @Override
