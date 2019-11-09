@@ -8,8 +8,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.Navigation;
+
 import android.content.Intent;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 import android.graphics.Color;
@@ -44,7 +48,7 @@ import java.util.List;
 
 
 public class HomePage extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GetTMDBJsonData.OnDataReady {
 
     private static final String TAG = "ViewDatabase";
     private Toolbar toolbar;
@@ -56,66 +60,73 @@ public class HomePage extends AppCompatActivity
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
     private List<String> genresList = new ArrayList<>();
-    private Button buttons[]= new Button[5];
+    private Button buttons[] = new Button[5];
     TextView textViewDisplayName;
     TextView textViewDisplayGenres;
+    private TMDBRecyclerViewAdapter mTMDBRecyclerViewAdapter;
 
+    private static final String baseURL ="https://api.themoviedb.org/3/discover/movie?api_key=5ba2372e5f26794510a9b0987dddf17b&language=he-IL&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&year=2019";
+    //private static final String baseURI ="https://api.themoviedb.org/3";
+    //private static final String SearchURI ="https://api.themoviedb.org/3/search/movie?query=man in black&api_key=5ba2372e5f26794510a9b0987dddf17b&language=he-IL";
+    //private static final String GenresListURI ="https://api.themoviedb.org/3/genre/movie/list?api_key=5ba2372e5f26794510a9b0987dddf17b&language=he-il";
+    //private static final String TopRated_TVShowsURI =" https://api.themoviedb.org/3/tv/top_rated?api_key=5ba2372e5f26794510a9b0987dddf17b&language=he-il&page=1";
+    private static final String language ="he-IL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_page);
+        setContentView(R.layout.home_content);
 
         mAuth = FirebaseAuth.getInstance();
         final FirebaseUser user = mAuth.getCurrentUser();
         textViewDisplayName = (TextView) findViewById(R.id.helloUser);
-        textViewDisplayGenres= (TextView) findViewById(R.id.genres);
+        textViewDisplayGenres = (TextView) findViewById(R.id.genres);
 
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler2);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mTMDBRecyclerViewAdapter = new TMDBRecyclerViewAdapter(this, new ArrayList<Movie>());
+        recyclerView.setAdapter(mTMDBRecyclerViewAdapter);
 
         toolbar = findViewById(R.id.toolbarId);
-        emailNav= findViewById(R.id.emailNavBarId);
+        emailNav = findViewById(R.id.emailNavBarId);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        DrawerLayout drawer = findViewById(R.id.drawerLayoutId);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navViewId);
-        navigationView.setNavigationItemSelectedListener(this);
-
-
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
+//
+//        DrawerLayout drawer = findViewById(R.id.drawerLayoutId);
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.navViewId);
+//        navigationView.setNavigationItemSelectedListener(this);
+//
+//
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.addDrawerListener(toggle);
+//        toggle.syncState();
 
         loadUserInformation();
         updateGenres(genresList);
         DisplayGenres(buttons);
-
-
-
-
-
     }
+
     @Override
     public void onStart() {
         super.onStart();
-       // checkAuth();
+        // checkAuth();
 //        mAuth.addAuthStateListener(mAuthListener);
     }
-    private void loadUserInformation () {
+
+    private void loadUserInformation() {
 
 
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user.getDisplayName() != null) {
-            textViewDisplayName.setText("ברוכים הבאים,  " + user.getDisplayName()+ "!");
+            textViewDisplayName.setText("ברוכים הבאים,  " + user.getDisplayName() + "!");
         }
 
 
     }
 
-    private void updateGenres ( final List<String> genres){
+    private void updateGenres(final List<String> genres) {
 
         myRef = FirebaseDatabase.getInstance().getReference("Users");
         final String userName = mAuth.getCurrentUser().getDisplayName();
@@ -142,7 +153,7 @@ public class HomePage extends AppCompatActivity
 
     }
 
-    private void DisplayGenres (final Button buttons[]){
+    private void DisplayGenres(final Button buttons[]) {
         myRef = FirebaseDatabase.getInstance().getReference("Users");
         final String userName = mAuth.getCurrentUser().getDisplayName();
 
@@ -150,25 +161,22 @@ public class HomePage extends AppCompatActivity
         myRef.child(userName).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String genresStr= textViewDisplayGenres.getText().toString();
+                String genresStr = textViewDisplayGenres.getText().toString();
 
-                long numOfGenres= dataSnapshot.child("preferences").getChildrenCount();
+                long numOfGenres = dataSnapshot.child("preferences").getChildrenCount();
 
-                createButtons(genresStr,numOfGenres);
-
-
-
+                createButtons(genresStr, numOfGenres);
 
 
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
         });
 
-        }
-
+    }
 
 
     private void checkAuth() {
@@ -179,32 +187,32 @@ public class HomePage extends AppCompatActivity
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    Toast.makeText(HomePage.this, "Successfully signed in with: " + user.getEmail(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(HomePage.this, "Successfully signed in with: " + user.getEmail(), Toast.LENGTH_LONG).show();
 
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
-                    Toast.makeText(HomePage.this, "Successfully signed out " + user.getEmail(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(HomePage.this, "Successfully signed out " + user.getEmail(), Toast.LENGTH_LONG).show();
                 }
             }
         };
     }
 
-    private void createButtons(String genreStr, long numOfGenres){
+    private void createButtons(String genreStr, long numOfGenres) {
         Log.d(TAG, "string: " + genreStr);
 
 
-        List<String> genresList= Arrays.asList(genreStr.split("\\s*,\\s*"));
-        Toast.makeText(HomePage.this, "genres list from func: " + genresList,Toast.LENGTH_LONG).show();
+        List<String> genresList = Arrays.asList(genreStr.split("\\s*,\\s*"));
+        Toast.makeText(HomePage.this, "genres list from func: " + genresList, Toast.LENGTH_LONG).show();
 
-        LinearLayout linearLayout= (LinearLayout)findViewById(R.id.buttonsLayout);
-        LinearLayout.LayoutParams layoutParams= new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.buttonsLayout);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        int color= 0x5AB300;
+        int color = 0x5AB300;
 
-        for (int i=0; i<numOfGenres; i++){
+        for (int i = 0; i < numOfGenres; i++) {
 
-            Button genresBtn= new Button(this);
+            Button genresBtn = new Button(this);
             linearLayout.addView(genresBtn);
             genresBtn.setText(genresList.get(i));
             //genresBtn.setBackgroundColor(Color.RED);
@@ -212,17 +220,10 @@ public class HomePage extends AppCompatActivity
             //genresBtn.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, color));
 
 
-
-
-
         }
 
 
-
-
-
     }
-
 
 
     @Override
@@ -244,7 +245,6 @@ public class HomePage extends AppCompatActivity
                 Intent HomeIntent = new Intent(this, HomePage.class);
                 startActivity(HomeIntent);
                 return true;
-
 
 
             case R.id.action_accountId:
@@ -292,7 +292,6 @@ public class HomePage extends AppCompatActivity
     }
 
 
-
     @Override
     public void onBackPressed() {
      /*   DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -300,11 +299,35 @@ public class HomePage extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-       */ }
+       */
+    }
 
     public boolean onNavigationItemSelected(MenuItem item) {
 
-     return true;
+        return true;
 
+    }
+
+    protected  void onResume(){
+        Log.d(TAG, "onResume: starts");
+        super.onResume();
+        GetTMDBJsonData gTMDBdata = new GetTMDBJsonData(this, baseURL, language);
+        //   gTMDBdata.excuteOnSameThread("");
+        gTMDBdata.execute();
+        Log.d(TAG, "onResume: ends");
+
+    }
+
+
+    @Override
+    public void onDataReady(List<Movie> data, DownloadStatus status){
+        Log.d(TAG, "onDataReady: starts");
+        if(status == DownloadStatus.OK){
+            mTMDBRecyclerViewAdapter.loadNewData(data);
+        }
+        else {
+            Log.e(TAG, "onDataReady failed with status " + status );
+        }
+        Log.d(TAG, "onDataReady: ends");
     }
 }

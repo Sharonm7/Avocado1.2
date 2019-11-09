@@ -6,16 +6,25 @@
     android:layout_height="match_parent"
     android:id="@+id/homeLayout"
     tools:context=".MainActivity"
-    android:orientation="horizontal"
-    tools:showIn="@layout/home_toolbar"
-    >
+    android:orientation="horizontal">
+    <!--    tools:showIn="@layout/home_toolbar"-->
+
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_alignParentTop="true"
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/linearLayout">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="122dp"
+        android:layout_marginLeft="122dp"
+        android:layout_marginTop="-11dp"
+        android:layout_marginEnd="210dp"
+        android:layout_marginRight="210dp"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/helloUser"
@@ -23,8 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="100dp"
             android:text=""
-            android:textSize="30dp"
-            android:textAlignment="center"
+            android:textAlignment="gravity"
+            android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -48,13 +57,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="150dp"
             android:text=""
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"/>
-
-
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </LinearLayout>
@@ -64,14 +71,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="200dp">
+    </LinearLayout>
 
-
-
-
-        ></LinearLayout>
-
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 
 </RelativeLayout>
